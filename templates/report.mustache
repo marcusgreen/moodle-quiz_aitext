@@ -1,0 +1,62 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+@template quiz_aitext/report
+
+    AI Text report page for quiz report aitext plugin.
+
+    Classes required for JS:
+    * None
+
+    Data attributes required for JS:
+    * None
+
+    Context variables required for this template:
+    * pluginname - string - Name of the plugin
+    * description - string - Description of the aitext report
+    * quizname - string - Name of the quiz
+    * coursename - string - Name of the course
+
+    Example context (json):
+    {
+        "pluginname": "Report AI Text",
+        "description": "AI Text report",
+        "quizname": "Sample Quiz",
+        "coursename": "Sample Course"
+    }
+}}
+
+<div class="box py-3 generalbox">
+<h4>{{#str}} templatereport, quiz_aitext {{/str}}</h4>
+    <p>{{#str}} templatedescription, quiz_aitext {{/str}}</p>
+
+        <h5>{{#str}} templateinfo, quiz_aitext {{/str}}</h5>
+        <ul>
+            <li>{{#str}} quizname, quiz_aitext {{/str}}: <strong>{{quizname}}</strong></li>
+            <li>{{#str}} coursename, quiz_aitext {{/str}}: <strong>{{coursename}}</strong></li>
+        </ul>
+    </div>
+
+    <div class="mt-3">
+        <p class="text-muted">{{#str}} templatenote, quiz_aitext {{/str}}</p>
+    </div>
+</div>
+
+    <div class="mt-3">
+        <p class="text-muted">{{#str}} templatenote, quiz_aitext {{/str}}</p>
+    </div>
+</div>
