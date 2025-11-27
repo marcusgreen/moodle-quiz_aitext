@@ -24,4 +24,17 @@ namespace quiz_aitext;
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class aitext {
+
+    /**
+     * Perform an AI request using the AI bridge
+     *
+     * @param int $contextid The context ID for AI requests
+     * @param string $prompt The prompt to send to the AI
+     * @param string $purpose The purpose of the request (default: 'feedback')
+     * @return string The AI response
+     */
+    public function perform_ai_request(int $contextid, string $prompt, string $purpose = 'feedback'): string {
+        $aibridge = new aibridge($contextid);
+        return $aibridge->perform_request($prompt, $purpose);
+    }
 }
