@@ -27,6 +27,7 @@ $string['reportname'] = 'aitext';
 $string['coursename'] = 'Course name';
 $string['quizname'] = 'Quiz name';
 $string['aitext'] = 'AI Text';
+$string['analyst'] = 'Generate Analysis';
 $string['template'] = 'AI Text';
 $string['templatereport'] = 'AI Text report';
 $string['report_template'] = 'AI Text';

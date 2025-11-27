@@ -43,16 +43,17 @@ class quiz_aitext_report extends report_base {
 
         $this->print_header_and_tabs($cm, $course, $quiz, 'aitext');
 
-echo $OUTPUT->heading(get_string('pluginname', 'quiz_aitext'), 3);
+        echo $OUTPUT->heading(get_string('pluginname', 'quiz_aitext'), 3);
 
-$templatecontext = [
-    'pluginname' => get_string('pluginname', 'quiz_aitext'),
-    'description' => get_string('templatereport', 'quiz_aitext'),
-    'quizname' => $quiz->name,
-    'coursename' => $course->fullname,
-];
+        $templatecontext = [
+            'pluginname' => get_string('pluginname', 'quiz_aitext'),
+            'description' => get_string('templatereport', 'quiz_aitext'),
+            'quizname' => $quiz->name,
+            'coursename' => $course->fullname,
+            'cmid' => $cm->id,
+        ];
 
-echo $OUTPUT->render_from_template('quiz_aitext/report', $templatecontext);
+        echo $OUTPUT->render_from_template('quiz_aitext/report', $templatecontext);
 
         return true;
     }

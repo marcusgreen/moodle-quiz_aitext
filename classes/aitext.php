@@ -37,4 +37,24 @@ class aitext {
         $aibridge = new aibridge($contextid);
         return $aibridge->perform_request($prompt, $purpose);
     }
+
+    /**
+     * Get all question attempts data for a quiz instance
+     *
+     * @param int $quizid The quiz ID
+     * @return array Array of question attempt data
+     */
+    public function get_question_attempts(int $quizid): array {
+        global $DB;
+        
+        $sql = "SELECT qa.*, q.questiontext, q.qtype
+                FROM {question_attempts} qa
+                JOIN {question_attempt_steps} qas ON qa.id = qas.questionattemptid
+                JOIN {question} q ON qa.questionid = q.id
+                JOIN {quiz_attempts} quizat ON qa.questionusageid = quizat.uniqueid
+                WHERE quizat.quiz = :quizid
+                ORDER BY qa.id";
+                
+        return $DB->get_records_sql($sql, ['quizid' => $quizid]);
+    }
 }
