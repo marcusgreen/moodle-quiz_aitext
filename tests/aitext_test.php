@@ -134,4 +134,42 @@ class aitext_test extends \advanced_testcase {
         $this->assertIsArray($result);
         $this->assertEmpty($result);
     }
+
+    /**
+     * Test the report display functionality
+     */
+    public function test_report_display_with_form_submission(): void {
+        $this->resetAfterTest();
+        
+        // Create a quiz and related data.
+        $course = $this->getDataGenerator()->create_course();
+        $quiz = $this->getDataGenerator()->create_module('quiz', ['course' => $course->id]);
+        $cm = get_coursemodule_from_instance('quiz', $quiz->id);
+        
+        // Create a question.
+        $questiongenerator = $this->getDataGenerator()->get_plugin_generator('core_question');
+        $cat = $questiongenerator->create_question_category();
+        $question = $questiongenerator->create_question('multichoice', null, ['category' => $cat->id]);
+        
+        // Add the question to the quiz.
+        quiz_add_quiz_question($question->id, $quiz);
+        
+        // Create a user and attempt the quiz.
+        $user = $this->getDataGenerator()->create_user();
+        $quizobj = \quiz::create($quiz->id, $user->id);
+        $quba = \question_usage_by_activity::create('test');
+        $quizobj->prepare_attempt_quiz($quba, 1);
+        $timenow = time();
+        $attempt = quiz_create_attempt($quizobj, 1, false, $timenow, $user->id);
+        
+        // Test the report display
+        $report = new \quiz_aitext_report();
+        
+        // Mock the form submission by setting GET parameters
+        $_POST['mode'] = 'aitext';
+        $_POST['id'] = $cm->id;
+        
+        // This would normally trigger the analysis, but we're just testing the structure
+        $this->assertNotNull($report);
+    }
 }

@@ -31,6 +31,11 @@
     * quizname - string - Name of the quiz
     * coursename - string - Name of the course
     * cmid - int - Course module ID
+    * has_analysis - bool - Whether analysis data is available
+    * analysis_message - string - Message about analysis status
+    * question_attempts - array - Array of question attempt data
+    * error_details - string - Error message if analysis failed
+    * total_attempts_count - int - Total number of attempts found
 
     Example context (json):
     {
@@ -38,7 +43,19 @@
         "description": "AI Text report",
         "quizname": "Sample Quiz",
         "coursename": "Sample Course",
-        "cmid": 42
+        "cmid": 42,
+        "has_analysis": true,
+        "analysis_message": "Analysis Complete",
+        "question_attempts": [
+            {
+                "id": 123,
+                "questiontext": "What is 2+2?",
+                "qtype": "multichoice",
+                "state": "complete",
+                "fraction": 1.0
+            }
+        ],
+        "total_attempts_count": 1
     }
 }}
 
@@ -67,3 +84,54 @@
         <p class="text-muted">{{#str}} templatenote, quiz_aitext {{/str}}</p>
     </div>
 </div>
+
+{{#has_analysis}}
+<div class="card mt-4">
+    <div class="card-header bg-primary text-white">
+        <h5 class="mb-0">{{analysis_message}}</h5>
+    </div>
+    <div class="card-body">
+        {{#error_details}}
+        <div class="alert alert-danger">
+            <strong>Error:</strong> {{error_details}}
+        </div>
+        {{/error_details}}
+        
+        {{#question_attempts}}
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Question Type</th>
+                        <th>Question Text</th>
+                        <th>State</th>
+                        <th>Score</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{#question_attempts}}
+                    <tr>
+                        <td>{{id}}</td>
+                        <td>{{qtype}}</td>
+                        <td>{{{questiontext}}}</td>
+                        <td>{{state}}</td>
+                        <td>{{fraction}}</td>
+                    </tr>
+                    {{/question_attempts}}
+                </tbody>
+            </table>
+        </div>
+        <div class="alert alert-info">
+            Total attempts found: {{total_attempts_count}}
+        </div>
+        {{/question_attempts}}
+        
+        {{#no_attempts_found}}
+        <div class="alert alert-warning">
+            {{analysis_message}}
+        </div>
+        {{/no_attempts_found}}
+    </div>
+</div>
+{{/has_analysis}}
