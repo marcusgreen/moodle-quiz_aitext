@@ -94,23 +94,23 @@ class quiz_aitext_report extends report_base {
             // Create aitext instance
             $aitext = new \quiz_aitext\aitext();
             
-            // Get question attempts for this quiz
-            $question_attempts = $aitext->get_question_attempts($quiz->id);
+            // Get student submissions for this quiz
+            $student_submissions = $aitext->get_student_submissions($quiz->id);
             
-            if (empty($question_attempts)) {
+            if (empty($student_submissions)) {
                 return [
                     'analysis_message' => get_string('no_attempts_found', 'quiz_aitext'),
-                    'question_attempts' => [],
+                    'student_submissions' => [],
                 ];
             }
             
             // Process the data for display
-            $processed_attempts = $this->process_question_attempts($question_attempts);
+            $processed_submissions = $this->process_student_submissions($student_submissions);
             
             return [
                 'analysis_message' => get_string('analysis_complete', 'quiz_aitext'),
-                'question_attempts' => $processed_attempts,
-                'total_attempts_count' => count($processed_attempts),
+                'student_submissions' => $processed_submissions,
+                'total_submissions_count' => count($processed_submissions),
             ];
             
         } catch (Exception $e) {
@@ -122,7 +122,50 @@ class quiz_aitext_report extends report_base {
     }
 
     /**
-     * Process question attempts for template display
+     * Process student submissions for template display
+     * 
+     * @param array $submissions Raw student submissions data
+     * @return array Processed data for template
+     */
+    private function process_student_submissions($submissions) {
+        $processed = [];
+        
+        foreach ($submissions as $submission) {
+            // Format the response data for display
+            $response_text = '';
+            if (!empty($submission['responses'])) {
+                foreach ($submission['responses'] as $varname => $value) {
+                    if ($varname === 'answer' && !empty($value)) {
+                        $response_text = format_text($value, FORMAT_HTML);
+                        break;
+                    }
+                }
+                if (empty($response_text)) {
+                    // If no 'answer' field, show all response data
+                    $response_text = '<pre>' . htmlspecialchars(print_r($submission['responses'], true)) . '</pre>';
+                }
+            }
+            
+            $processed[] = [
+                'userid' => $submission['userid'],
+                'username' => $submission['username'],
+                'questionid' => $submission['questionid'],
+                'questiontype' => $submission['questiontype'],
+                'questiontext' => format_text($submission['questiontext'], FORMAT_HTML),
+                'response_text' => $response_text,
+                'fraction' => $submission['fraction'],
+                'maxmark' => $submission['maxmark'],
+                'score_percentage' => $submission['maxmark'] > 0 ? round(($submission['fraction'] / $submission['maxmark']) * 100, 1) : 0,
+                'quizattemptid' => $submission['quizattemptid'],
+                'questionattemptid' => $submission['questionattemptid'],
+            ];
+        }
+        
+        return $processed;
+    }
+
+    /**
+     * Process question attempts for template display (legacy method)
      * 
      * @param array $attempts Raw question attempts data
      * @return array Processed data for template

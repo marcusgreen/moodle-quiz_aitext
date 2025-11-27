@@ -33,9 +33,9 @@
     * cmid - int - Course module ID
     * has_analysis - bool - Whether analysis data is available
     * analysis_message - string - Message about analysis status
-    * question_attempts - array - Array of question attempt data
+    * student_submissions - array - Array of student submission data with responses
     * error_details - string - Error message if analysis failed
-    * total_attempts_count - int - Total number of attempts found
+    * total_submissions_count - int - Total number of student submissions found
 
     Example context (json):
     {
@@ -46,16 +46,20 @@
         "cmid": 42,
         "has_analysis": true,
         "analysis_message": "Analysis Complete",
-        "question_attempts": [
+        "student_submissions": [
             {
-                "id": 123,
-                "questiontext": "What is 2+2?",
-                "qtype": "multichoice",
-                "state": "complete",
-                "fraction": 1.0
+                "userid": 123,
+                "username": "John Doe",
+                "questionid": 456,
+                "questiontype": "essay",
+                "questiontext": "Explain the concept of photosynthesis.",
+                "response_text": "Photosynthesis is the process by which...",
+                "fraction": 8.5,
+                "maxmark": 10,
+                "score_percentage": 85.0
             }
         ],
-        "total_attempts_count": 1
+        "total_submissions_count": 1
     }
 }}
 
@@ -97,35 +101,50 @@
         </div>
         {{/error_details}}
         
-        {{#question_attempts}}
+        {{#student_submissions}}
         <div class="table-responsive">
-            <table class="table table-striped">
-                <thead>
+            <table class="table table-striped table-bordered">
+                <thead class="table-dark">
                     <tr>
-                        <th>ID</th>
+                        <th>Student</th>
                         <th>Question Type</th>
-                        <th>Question Text</th>
-                        <th>State</th>
+                        <th>Question</th>
+                        <th>Response</th>
                         <th>Score</th>
+                        <th>Percentage</th>
                     </tr>
                 </thead>
                 <tbody>
-                    {{#question_attempts}}
+                    {{#student_submissions}}
                     <tr>
-                        <td>{{id}}</td>
-                        <td>{{qtype}}</td>
-                        <td>{{{questiontext}}}</td>
-                        <td>{{state}}</td>
-                        <td>{{fraction}}</td>
+                        <td>
+                            <strong>{{username}}</strong><br>
+                            <small class="text-muted">User ID: {{userid}}</small>
+                        </td>
+                        <td>
+                            <span class="badge bg-secondary">{{questiontype}}</span>
+                        </td>
+                        <td>
+                            <div class="question-text">{{{questiontext}}}</div>
+                        </td>
+                        <td>
+                            <div class="response-text">{{{response_text}}}</div>
+                        </td>
+                        <td>
+                            <span class="badge bg-success">{{fraction}} / {{maxmark}}</span>
+                        </td>
+                        <td>
+                            <span class="badge bg-info">{{score_percentage}}%</span>
+                        </td>
                     </tr>
-                    {{/question_attempts}}
+                    {{/student_submissions}}
                 </tbody>
             </table>
         </div>
         <div class="alert alert-info">
-            Total attempts found: {{total_attempts_count}}
+            Total student submissions found: {{total_submissions_count}}
         </div>
-        {{/question_attempts}}
+        {{/student_submissions}}
         
         {{#no_attempts_found}}
         <div class="alert alert-warning">

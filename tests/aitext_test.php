@@ -37,15 +37,65 @@ class aitext_test extends \advanced_testcase {
     /** @var \stdClass The student user object */
     protected $student;
 
-    /**
-     * Set up function to create test data.
+/**
+     * Test that get_student_submissions returns array with response data
      */
-    protected function setUp(): void {
-        parent::setUp();
+    public function test_get_student_submissions_returns_array(): void {
         $this->resetAfterTest();
-
-        // Create a student user.
-        $this->student = $this->getDataGenerator()->create_user();
+        
+        // Create a quiz and related data.
+        $course = $this->getDataGenerator()->create_course();
+        $quiz = $this->getDataGenerator()->create_module('quiz', ['course' => $course->id]);
+        
+        // Create a question.
+        $questiongenerator = $this->getDataGenerator()->get_plugin_generator('core_question');
+        $cat = $questiongenerator->create_question_category();
+        $question = $questiongenerator->create_question('essay', null, ['category' => $cat->id]);
+        
+        // Add the question to the quiz.
+        quiz_add_quiz_question($question->id, $quiz);
+        
+        // Create a user and attempt the quiz.
+        $user = $this->getDataGenerator()->create_user();
+        $quizobj = \quiz::create($quiz->id, $user->id);
+        $quba = \question_usage_by_activity::create('test');
+        $quizobj->prepare_attempt_quiz($quba, 1);
+        $timenow = time();
+        $attempt = quiz_create_attempt($quizobj, 1, false, $timenow, $user->id);
+        
+        // Submit an answer
+        $tosubmit = ['answer' => 'This is a test essay response.'];
+        $quba->process_all_actions($timenow, $tosubmit);
+        $timenow += 1;
+        $quba->finish_all_questions($timenow);
+        
+        // Save the question usage
+        question_engine::save_questions_usage_by_activity($quba);
+        
+        // Complete the quiz attempt
+        $attemptobj = \quiz_attempt::create($attempt->uniqueid);
+        $attemptobj->process_finish($timenow, false);
+        
+        // Instantiate the aitext class.
+        $aitext = new quiz_aitext\aitext();
+        
+        // Call the get_student_submissions method.
+        $result = $aitext->get_student_submissions($quiz->id);
+        
+        // Assert that the result is an array.
+        $this->assertIsArray($result);
+        
+        // Assert that we get data back.
+        $this->assertNotEmpty($result);
+        
+        // Check that the returned data contains expected fields.
+        $firstsubmission = reset($result);
+        $this->assertNotNull($firstsubmission);
+        $this->assertArrayHasKey('userid', $firstsubmission);
+        $this->assertArrayHasKey('username', $firstsubmission);
+        $this->assertArrayHasKey('questiontype', $firstsubmission);
+        $this->assertArrayHasKey('response_text', $firstsubmission);
+        $this->assertArrayHasKey('responses', $firstsubmission);
     }
 
     /**
@@ -121,15 +171,15 @@ class aitext_test extends \advanced_testcase {
     }
 
     /**
-     * Test that get_question_attempts returns empty array for non-existent quiz.
+     * Test that get_student_submissions returns empty array for non-existent quiz.
      */
-    public function test_get_question_attempts_with_nonexistent_quiz(): void {
+    public function test_get_student_submissions_with_nonexistent_quiz(): void {
         // Instantiate the aitext class.
-        $aitext = new aitext();
-
-        // Call the get_question_attempts method with a non-existent quiz ID.
-        $result = $aitext->get_question_attempts(99999);
-
+        $aitext = new quiz_aitext\aitext();
+        
+        // Call the get_student_submissions method with a non-existent quiz ID.
+        $result = $aitext->get_student_submissions(99999);
+        
         // Assert that the result is an empty array.
         $this->assertIsArray($result);
         $this->assertEmpty($result);

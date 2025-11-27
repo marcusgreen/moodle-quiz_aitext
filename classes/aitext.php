@@ -39,7 +39,72 @@ class aitext {
     }
 
     /**
-     * Get all question attempts data for a quiz instance
+     * Get all student submissions for a quiz instance with grouped responses
+     *
+     * @param int $quizid The quiz ID
+     * @return array Array of student submission data grouped by user and question
+     */
+    public function get_student_submissions(int $quizid): array {
+        global $DB;
+        
+        $sql = "SELECT DISTINCT
+                    quizat.id as quizattemptid,
+                    quizat.userid,
+                    u.firstname,
+                    u.lastname,
+                    qa.id as questionattemptid,
+                    qa.questionid,
+                    qa.questionusageid,
+                    qa.fraction,
+                    qa.maxmark,
+                    q.qtype,
+                    q.questiontext,
+                    qas.id as stepid,
+                    qasd.name as variablename,
+                    qasd.value as responsevalue
+                FROM {quiz_attempts} quizat
+                JOIN {question_usage_by_activity} quba ON quizat.uniqueid = quba.id
+                JOIN {question_attempts} qa ON quba.id = qa.questionusageid
+                JOIN {question_attempt_steps} qas ON qa.id = qas.questionattemptid
+                JOIN {question_attempt_step_data} qasd ON qas.id = qasd.attemptstepid
+                JOIN {user} u ON qa.userid = u.id
+                JOIN {question} q ON qa.questionid = q.id
+                WHERE quizat.quiz = :quizid
+                  AND quizat.state = 'finished'
+                  AND quizat.preview = 0
+                  AND qasd.name NOT LIKE '-%'     -- Exclude behavior vars
+                  AND qasd.name NOT LIKE ':_%'    -- Exclude metadata
+                ORDER BY quizat.userid, qa.questionid, qas.id, qasd.name";
+        
+        $raw_data = $DB->get_records_sql($sql, ['quizid' => $quizid]);
+        
+        // Group responses by user and question
+        $grouped = [];
+        foreach ($raw_data as $row) {
+            $key = $row->userid . '_' . $row->questionid;
+            if (!isset($grouped[$key])) {
+                $grouped[$key] = [
+                    'userid' => $row->userid,
+                    'username' => $row->firstname . ' ' . $row->lastname,
+                    'questionid' => $row->questionid,
+                    'questiontype' => $row->qtype,
+                    'questiontext' => $row->questiontext,
+                    'fraction' => $row->fraction,
+                    'maxmark' => $row->maxmark,
+                    'responses' => [],
+                    'quizattemptid' => $row->quizattemptid,
+                    'questionattemptid' => $row->questionattemptid,
+                    'stepid' => $row->stepid,
+                ];
+            }
+            $grouped[$key]['responses'][$row->variablename] = $row->responsevalue;
+        }
+        
+        return array_values($grouped);
+    }
+
+    /**
+     * Get all question attempts data for a quiz instance (legacy method)
      *
      * @param int $quizid The quiz ID
      * @return array Array of question attempt data
