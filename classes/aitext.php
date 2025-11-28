@@ -24,7 +24,6 @@ namespace quiz_aitext;
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class aitext {
-
     /**
      * Perform an AI request using the AI bridge
      *
@@ -46,7 +45,7 @@ class aitext {
      */
     public function get_student_submissions(int $quizid): array {
         global $DB;
-        
+
         $sql = "SELECT DISTINCT
                     quizat.id as quizattemptid,
                     quizat.userid,
@@ -75,12 +74,12 @@ class aitext {
                   AND qasd.name NOT LIKE '-%'     -- Exclude behavior vars
                   AND qasd.name NOT LIKE ':_%'    -- Exclude metadata
                 ORDER BY quizat.userid, qa.questionid, qas.id, qasd.name";
-        
-        $raw_data = $DB->get_records_sql($sql, ['quizid' => $quizid]);
-        
+
+        $rawdata = $DB->get_records_sql($sql, ['quizid' => $quizid]);
+
         // Group responses by user and question
         $grouped = [];
-        foreach ($raw_data as $row) {
+        foreach ($rawdata as $row) {
             $key = $row->userid . '_' . $row->questionid;
             if (!isset($grouped[$key])) {
                 $grouped[$key] = [
@@ -99,7 +98,7 @@ class aitext {
             }
             $grouped[$key]['responses'][$row->variablename] = $row->responsevalue;
         }
-        
+
         return array_values($grouped);
     }
 
@@ -111,7 +110,7 @@ class aitext {
      */
     public function get_question_attempts(int $quizid): array {
         global $DB;
-        
+
         $sql = "SELECT qa.*, q.questiontext, q.qtype
                 FROM {question_attempts} qa
                 JOIN {question_attempt_steps} qas ON qa.id = qas.questionattemptid
@@ -119,7 +118,7 @@ class aitext {
                 JOIN {quiz_attempts} quizat ON qa.questionusageid = quizat.uniqueid
                 WHERE quizat.quiz = :quizid
                 ORDER BY qa.id";
-                
+
         return $DB->get_records_sql($sql, ['quizid' => $quizid]);
     }
 }

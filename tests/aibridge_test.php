@@ -26,12 +26,11 @@ require_once($CFG->dirroot . '/mod/quiz/report/aitext/classes/aibridge.php');
  * @copyright  2025 Your Name
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class quiz_aitext_aibridge_test extends advanced_testcase {
-
+final class aibridge_test extends advanced_testcase {
     /**
      * Test that perform_request returns 'AI Feedback' in test environments.
      */
-    public function test_perform_request_returns_ai_feedback_in_test_environment() {
+    public function test_perform_request_returns_ai_feedback_in_test_environment(): void {
 
         // Create a mock context ID.
         $contextid = 123;
@@ -56,7 +55,7 @@ class quiz_aitext_aibridge_test extends advanced_testcase {
     /**
      * Test that perform_request returns 'AI Feedback' when BEHAT_SITE_RUNNING is defined.
      */
-    public function test_perform_request_returns_ai_feedback_when_behat_running() {
+    public function test_perform_request_returns_ai_feedback_when_behat_running(): void {
         // Set up BEHAT test environment constant.
         if (!defined('BEHAT_SITE_RUNNING')) {
             define('BEHAT_SITE_RUNNING', true);
@@ -81,7 +80,7 @@ class quiz_aitext_aibridge_test extends advanced_testcase {
     /**
      * Test constructor with different context IDs.
      */
-    public function test_constructor_sets_context_id() {
+    public function test_constructor_sets_context_id(): void {
         $contextid = 789;
         $aibridge = new quiz_aitext\aibridge($contextid);
 

@@ -31,30 +31,30 @@ require_once($CFG->dirroot . '/mod/quiz/tests/quiz_question_helper_test_trait.ph
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @covers     \quiz_aitext\aitext
  */
-class aitext_test extends \advanced_testcase {
+final class aitext_test extends \advanced_testcase {
     use \quiz_question_helper_test_trait;
 
     /** @var \stdClass The student user object */
     protected $student;
 
-/**
+    /**
      * Test that get_student_submissions returns array with response data
      */
     public function test_get_student_submissions_returns_array(): void {
         $this->resetAfterTest();
-        
+
         // Create a quiz and related data.
         $course = $this->getDataGenerator()->create_course();
         $quiz = $this->getDataGenerator()->create_module('quiz', ['course' => $course->id]);
-        
+
         // Create a question.
         $questiongenerator = $this->getDataGenerator()->get_plugin_generator('core_question');
         $cat = $questiongenerator->create_question_category();
         $question = $questiongenerator->create_question('essay', null, ['category' => $cat->id]);
-        
+
         // Add the question to the quiz.
         quiz_add_quiz_question($question->id, $quiz);
-        
+
         // Create a user and attempt the quiz.
         $user = $this->getDataGenerator()->create_user();
         $quizobj = \quiz::create($quiz->id, $user->id);
@@ -62,32 +62,32 @@ class aitext_test extends \advanced_testcase {
         $quizobj->prepare_attempt_quiz($quba, 1);
         $timenow = time();
         $attempt = quiz_create_attempt($quizobj, 1, false, $timenow, $user->id);
-        
-        // Submit an answer
+
+        // Submit an answer.
         $tosubmit = ['answer' => 'This is a test essay response.'];
         $quba->process_all_actions($timenow, $tosubmit);
         $timenow += 1;
         $quba->finish_all_questions($timenow);
-        
-        // Save the question usage
+
+        // Save the question usage,
         question_engine::save_questions_usage_by_activity($quba);
-        
+
         // Complete the quiz attempt
         $attemptobj = \quiz_attempt::create($attempt->uniqueid);
         $attemptobj->process_finish($timenow, false);
-        
+
         // Instantiate the aitext class.
         $aitext = new quiz_aitext\aitext();
-        
+
         // Call the get_student_submissions method.
         $result = $aitext->get_student_submissions($quiz->id);
-        
+
         // Assert that the result is an array.
         $this->assertIsArray($result);
-        
+
         // Assert that we get data back.
         $this->assertNotEmpty($result);
-        
+
         // Check that the returned data contains expected fields.
         $firstsubmission = reset($result);
         $this->assertNotNull($firstsubmission);
@@ -119,7 +119,7 @@ class aitext_test extends \advanced_testcase {
 
         // Create and complete a quiz attempt using the trait helper.
         $this->setUser($this->student);
-        list($quizobj, $quba, $attemptobj) = $this->attempt_quiz($quiz, $this->student);
+        [$quizobj, $quba, $attemptobj] = $this->attempt_quiz($quiz, $this->student);
 
         // Instantiate the aitext class.
         $aitext = new aitext();
@@ -152,7 +152,7 @@ class aitext_test extends \advanced_testcase {
 
         // Create a quiz attempt using the trait helper.
         $this->setUser($this->student);
-        list($quizobj, $quba, $attemptobj) = $this->attempt_quiz($quiz, $this->student);
+        [$quizobj, $quba, $attemptobj] = $this->attempt_quiz($quiz, $this->student);
 
         // Instantiate the aitext class.
         $aitext = new aitext();
@@ -176,10 +176,10 @@ class aitext_test extends \advanced_testcase {
     public function test_get_student_submissions_with_nonexistent_quiz(): void {
         // Instantiate the aitext class.
         $aitext = new quiz_aitext\aitext();
-        
+
         // Call the get_student_submissions method with a non-existent quiz ID.
         $result = $aitext->get_student_submissions(99999);
-        
+
         // Assert that the result is an empty array.
         $this->assertIsArray($result);
         $this->assertEmpty($result);
@@ -190,20 +190,20 @@ class aitext_test extends \advanced_testcase {
      */
     public function test_report_display_with_form_submission(): void {
         $this->resetAfterTest();
-        
+
         // Create a quiz and related data.
         $course = $this->getDataGenerator()->create_course();
         $quiz = $this->getDataGenerator()->create_module('quiz', ['course' => $course->id]);
         $cm = get_coursemodule_from_instance('quiz', $quiz->id);
-        
+
         // Create a question.
         $questiongenerator = $this->getDataGenerator()->get_plugin_generator('core_question');
         $cat = $questiongenerator->create_question_category();
         $question = $questiongenerator->create_question('multichoice', null, ['category' => $cat->id]);
-        
+
         // Add the question to the quiz.
         quiz_add_quiz_question($question->id, $quiz);
-        
+
         // Create a user and attempt the quiz.
         $user = $this->getDataGenerator()->create_user();
         $quizobj = \quiz::create($quiz->id, $user->id);
@@ -211,14 +211,14 @@ class aitext_test extends \advanced_testcase {
         $quizobj->prepare_attempt_quiz($quba, 1);
         $timenow = time();
         $attempt = quiz_create_attempt($quizobj, 1, false, $timenow, $user->id);
-        
+
         // Test the report display
         $report = new \quiz_aitext_report();
-        
+
         // Mock the form submission by setting GET parameters
         $_POST['mode'] = 'aitext';
         $_POST['id'] = $cm->id;
-        
+
         // This would normally trigger the analysis, but we're just testing the structure
         $this->assertNotNull($report);
     }

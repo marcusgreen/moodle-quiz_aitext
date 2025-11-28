@@ -17,7 +17,7 @@
 /**
  * Upgrade script for quiz report aitext plugin.
  *
- * @package   quiz_report_aitext
+ * @package   quiz_aitext
  * @copyright 2025 Your Name
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -41,7 +41,7 @@ function xmldb_quiz_aitext_upgrade($oldversion) {
         $record->name = 'aitext';
         $record->capability = 'mod/quiz:viewreports';
         $record->displayorder = 10000; // Put it at the end.
-        
+
         // Check if it already exists.
         if (!$DB->record_exists('quiz_reports', ['name' => 'aitext'])) {
             $DB->insert_record('quiz_reports', $record);

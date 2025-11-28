@@ -17,7 +17,7 @@
 /**
  * Quiz report aitext version information.
  *
- * @package   quiz_report_aitext
+ * @package   quiz_aitext
  * @copyright 2025 Your Name
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */

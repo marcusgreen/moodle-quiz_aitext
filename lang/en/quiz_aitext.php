@@ -22,18 +22,18 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-$string['pluginname'] = 'Report AI Text';
-$string['reportname'] = 'aitext';
-$string['coursename'] = 'Course name';
-$string['quizname'] = 'Quiz name';
 $string['aitext'] = 'AI Text';
-$string['analyst'] = 'Generate Analysis';
 $string['analysis_complete'] = 'Analysis Complete';
 $string['analysis_error'] = 'Analysis Error Occurred';
+$string['analyst'] = 'Generate Analysis';
+$string['coursename'] = 'Course name';
 $string['no_attempts_found'] = 'No student submissions found for this quiz.';
-$string['template'] = 'AI Text';
-$string['templatereport'] = 'AI Text report';
+$string['pluginname'] = 'Report AI Text';
+$string['quizname'] = 'Quiz name';
 $string['report_template'] = 'AI Text';
+$string['reportname'] = 'aitext';
+$string['template'] = 'AI Text';
 $string['templatedescription'] = 'This is an AI text report plugin designed to provide AI-generated insights for quiz reports.';
 $string['templateinfo'] = 'AI Text Information';
 $string['templatenote'] = 'This is an AI text report. It uses AI to analyze and provide insights about quiz performance.';
+$string['templatereport'] = 'AI Text report';

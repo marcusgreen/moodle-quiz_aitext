@@ -24,7 +24,6 @@ namespace quiz_aitext;
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class aibridge {
-
     /** @var int The context ID for AI requests */
     private $contextid;
 

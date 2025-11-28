@@ -17,7 +17,7 @@
 /**
  * Quiz report aitext main class.
  *
- * @package   quiz_report_aitext
+ * @package   quiz_aitext
  * @copyright 2025 Your Name
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -45,11 +45,11 @@ class quiz_aitext_report extends report_base {
 
         echo $OUTPUT->heading(get_string('pluginname', 'quiz_aitext'), 3);
 
-        // Handle form submission
-        $analysis_data = null;
+        // Handle form submission.
+        $analysisdata = null;
         if ($this->is_form_submitted()) {
-            // Process the form and get question attempts
-            $analysis_data = $this->process_analysis_request($quiz, $cm, $course);
+            // Process the form and get question attempts.
+            $analysisdata = $this->process_analysis_request($quiz, $cm, $course);
         }
 
         $templatecontext = [
@@ -58,12 +58,12 @@ class quiz_aitext_report extends report_base {
             'quizname' => $quiz->name,
             'coursename' => $course->fullname,
             'cmid' => $cm->id,
-            'has_analysis' => !empty($analysis_data),
+            'has_analysis' => !empty($analysisdata),
         ];
 
-        // Add analysis data if available
-        if ($analysis_data) {
-            $templatecontext = array_merge($templatecontext, $analysis_data);
+        // Add analysis data if available.
+        if ($analysisdata) {
+            $templatecontext = array_merge($templatecontext, $analysisdata);
         }
 
         echo $OUTPUT->render_from_template('quiz_aitext/report', $templatecontext);
@@ -73,17 +73,17 @@ class quiz_aitext_report extends report_base {
 
     /**
      * Check if the form was submitted
-     * 
+     *
      * @return bool True if form was submitted
      */
     private function is_form_submitted() {
-        return optional_param('mode', '', PARAM_ALPHA) === 'aitext' && 
+        return optional_param('mode', '', PARAM_ALPHA) === 'aitext' &&
                optional_param('id', 0, PARAM_INT) > 0;
     }
 
     /**
      * Process the analysis request and return data
-     * 
+     *
      * @param object $quiz The quiz object
      * @param object $cm The course module object
      * @param object $course The course object
@@ -91,28 +91,27 @@ class quiz_aitext_report extends report_base {
      */
     private function process_analysis_request($quiz, $cm, $course) {
         try {
-            // Create aitext instance
+            // Create aitext instance.
             $aitext = new \quiz_aitext\aitext();
-            
-            // Get student submissions for this quiz
-            $student_submissions = $aitext->get_student_submissions($quiz->id);
-            
-            if (empty($student_submissions)) {
+
+            // Get student submissions for this quiz.
+            $studentsubmissions = $aitext->get_student_submissions($quiz->id);
+
+            if (empty($studentsubmissions)) {
                 return [
                     'analysis_message' => get_string('no_attempts_found', 'quiz_aitext'),
                     'student_submissions' => [],
                 ];
             }
-            
-            // Process the data for display
-            $processed_submissions = $this->process_student_submissions($student_submissions);
-            
+
+            // Process the data for display.
+            $processedsubmissions = $this->process_student_submissions($studentsubmissions);
+
             return [
                 'analysis_message' => get_string('analysis_complete', 'quiz_aitext'),
-                'student_submissions' => $processed_submissions,
-                'total_submissions_count' => count($processed_submissions),
+                'student_submissions' => $processedsubmissions,
+                'total_submissions_count' => count($processedsubmissions),
             ];
-            
         } catch (Exception $e) {
             return [
                 'analysis_message' => get_string('analysis_error', 'quiz_aitext'),
@@ -123,36 +122,36 @@ class quiz_aitext_report extends report_base {
 
     /**
      * Process student submissions for template display
-     * 
+     *
      * @param array $submissions Raw student submissions data
      * @return array Processed data for template
      */
     private function process_student_submissions($submissions) {
         $processed = [];
-        
+
         foreach ($submissions as $submission) {
-            // Format the response data for display
-            $response_text = '';
+            // Format the response data for display.
+            $responsetext = '';
             if (!empty($submission['responses'])) {
                 foreach ($submission['responses'] as $varname => $value) {
                     if ($varname === 'answer' && !empty($value)) {
-                        $response_text = format_text($value, FORMAT_HTML);
+                        $responsetext = format_text($value, FORMAT_HTML);
                         break;
                     }
                 }
-                if (empty($response_text)) {
-                    // If no 'answer' field, show all response data
-                    $response_text = '<pre>' . htmlspecialchars(print_r($submission['responses'], true)) . '</pre>';
+                if (empty($responsetext)) {
+                    // If no 'answer' field, show all response data.
+                    $responsetext = '<pre>' . htmlspecialchars(print_r($submission['responses'], true)) . '</pre>';
                 }
             }
-            
+
             $processed[] = [
                 'userid' => $submission['userid'],
                 'username' => $submission['username'],
                 'questionid' => $submission['questionid'],
                 'questiontype' => $submission['questiontype'],
                 'questiontext' => format_text($submission['questiontext'], FORMAT_HTML),
-                'response_text' => $response_text,
+                'response_text' => $responsetext,
                 'fraction' => $submission['fraction'],
                 'maxmark' => $submission['maxmark'],
                 'score_percentage' => $submission['maxmark'] > 0 ? round(($submission['fraction'] / $submission['maxmark']) * 100, 1) : 0,
@@ -160,19 +159,19 @@ class quiz_aitext_report extends report_base {
                 'questionattemptid' => $submission['questionattemptid'],
             ];
         }
-        
+
         return $processed;
     }
 
     /**
      * Process question attempts for template display (legacy method)
-     * 
+     *
      * @param array $attempts Raw question attempts data
      * @return array Processed data for template
      */
     private function process_question_attempts($attempts) {
         $processed = [];
-        
+
         foreach ($attempts as $attempt) {
             $processed[] = [
                 'id' => $attempt->id,
@@ -182,7 +181,7 @@ class quiz_aitext_report extends report_base {
                 'fraction' => $attempt->fraction ?? 0,
             ];
         }
-        
+
         return $processed;
     }
 }
