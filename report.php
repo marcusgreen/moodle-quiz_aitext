@@ -49,7 +49,8 @@ class quiz_aitext_report extends report_base {
         $analysisdata = null;
         if ($this->is_form_submitted()) {
             // Process the form and get question attempts.
-            $analysisdata = $this->process_analysis_request($quiz, $cm, $course);
+            $prompt = optional_param('prompt', '', PARAM_TEXT);
+            $analysisdata = $this->process_analysis_request($quiz, $cm, $course, $prompt);
         }
 
         $templatecontext = [
@@ -89,7 +90,7 @@ class quiz_aitext_report extends report_base {
      * @param object $course The course object
      * @return array|null Analysis data or null if no data
      */
-    private function process_analysis_request($quiz, $cm, $course) {
+    private function process_analysis_request($quiz, $cm, $course, $prompt) {
         try {
             // Create aitext instance.
             $aitext = new \quiz_aitext\aitext();
@@ -104,13 +105,22 @@ class quiz_aitext_report extends report_base {
                 ];
             }
 
-            // Process the data for display.
-            $processedsubmissions = $this->process_student_submissions($studentsubmissions);
-
+            $submissioncount = count($studentsubmissions);
+            // Recurse through studentSubmissions and collect comments.
+            $comments = '';
+            foreach ($studentsubmissions as $submission) {
+                if (!empty($submission->comment)) {
+                    $comments .= $submission->comment . "\n";
+                }
+            }
+            $ctx = \context_module::instance($cm->id);
+            $aibridge = new \quiz_aitext\aibridge($ctx->id);
+            $commentsummary = $aibridge->perform_request($prompt. ':and format with html tags:' .$comments);
+            xdebug_break();
             return [
                 'analysis_message' => get_string('analysis_complete', 'quiz_aitext'),
-                'student_submissions' => $processedsubmissions,
-                'total_submissions_count' => count($processedsubmissions),
+                'total_submissions_count' => $submissioncount,
+                'comments' => $commentsummary,
             ];
         } catch (Exception $e) {
             return [
@@ -128,7 +138,7 @@ class quiz_aitext_report extends report_base {
      */
     private function process_student_submissions($submissions) {
         $processed = [];
-
+        xdebug_break();
         foreach ($submissions as $submission) {
             // Format the response data for display.
             $responsetext = '';
