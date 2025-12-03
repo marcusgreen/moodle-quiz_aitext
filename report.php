@@ -47,6 +47,7 @@ class quiz_aitext_report extends report_base {
 
         // Handle form submission.
         $analysisdata = null;
+        xdebug_break();
         if ($this->is_form_submitted()) {
             // Process the form and get question attempts.
             $prompt = optional_param('prompt', '', PARAM_TEXT);
@@ -78,7 +79,8 @@ class quiz_aitext_report extends report_base {
      * @return bool True if form was submitted
      */
     private function is_form_submitted() {
-        return optional_param('mode', '', PARAM_ALPHA) === 'aitext' &&
+        return optional_param('submit', '', PARAM_TEXT) === 'submit' &&
+               optional_param('mode', '', PARAM_ALPHA) === 'aitext' &&
                optional_param('id', 0, PARAM_INT) > 0;
     }
 

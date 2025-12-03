@@ -82,10 +82,10 @@
 
                   <div class="mb-3">
                       <label for="prompt" class="form-label">{{#str}} prompt, quiz_aitext {{/str}}</label>
-                      <textarea id="prompt" name="prompt" class="form-control" rows="3" placeholder="{{#str}} prompt_placeholder, quiz_aitext {{/str}}">Summarise this text</textarea>
+                      <textarea id="prompt" name="prompt" class="form-control" rows="3" placeholder="{{#str}} prompt_placeholder, quiz_aitext {{/str}}">Summarise this text indicating what students have learnt and what they have not learnt</textarea>
                   </div>
 
-                  <button type="submit" class="btn btn-primary">
+                  <button type="submit" class="btn btn-primary" name="submit" value="submit">
                       {{#str}} analyst, quiz_aitext {{/str}}
                   </button>
               </form>
