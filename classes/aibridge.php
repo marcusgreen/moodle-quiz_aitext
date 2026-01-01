@@ -80,9 +80,9 @@ class aibridge {
                 !is_array($responsedata) || !array_key_exists('generatedcontent', $responsedata)
             ) {
                 if (is_null($responsedata) || is_null($responsedata['generatedcontent'])) {
-                    throw new moodle_exception('err_retrievingfeedback_checkconfig', 'qtype_aitext');
+                    throw new \moodle_exception('err_retrievingfeedback_checkconfig', 'qtype_aitext');
                 } else {
-                    throw new moodle_exception('err_retrievingfeedback', 'qtype_aitext');
+                    throw new \moodle_exception('err_retrievingfeedback', 'qtype_aitext');
                 }
             }
             return $responsedata['generatedcontent'];
