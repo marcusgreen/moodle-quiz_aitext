@@ -43,6 +43,7 @@ $string['reportname'] = 'aitext';
 $string['response'] = 'Response';
 $string['score'] = 'Score';
 $string['student'] = 'Student';
+$string['summary'] = 'Summary';
 $string['template'] = 'AI Text';
 $string['templatedescription'] = 'This is an AI text report plugin designed to provide AI-generated insights for quiz reports.';
 $string['templateinfo'] = 'AI Text Information';
