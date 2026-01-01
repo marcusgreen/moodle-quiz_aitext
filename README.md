@@ -1,8 +1,8 @@
-![AI Text Report Demo](docs/aitext.gif)
-
 # Moodle Quiz AI Text Report Plugin
 
 This plugin provides an AI-powered analysis report for Moodle quiz submissions, leveraging AI to analyze student comments and generate insights about quiz performance.
+
+![AI Text Report Demo](docs/aitext.gif)
 
 ## Features
 
