@@ -110,14 +110,11 @@
         {{/error_details}}
 
         {{#comments}}
-        <div class="card mb-4">
-            <div class="card-header bg-info text-white">
-                <h6 class="mb-0">{{#str}} commentsummary, quiz_aitext {{/str}}</h6>
-            </div>
-            <div class="card-body">
-                <div class="comments-content">{{{comments}}}</div>
-            </div>
+        <div class="card-text mb-4">
+            <h5 class="card-title">{{#str}} commentsummary, quiz_aitext {{/str}}</h5>
+            <p class="card-text">{{{comments}}}</p>
         </div>
+        <hr>
         {{/comments}}
 
         {{#student_submissions}}
