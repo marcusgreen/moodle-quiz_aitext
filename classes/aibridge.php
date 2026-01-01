@@ -51,7 +51,7 @@ class aibridge {
         }
         $backend = get_config('qtype_aitext', 'backend');
         if ($backend == 'local_ai_manager') {
-            $manager = new local_ai_manager\manager($purpose);
+            $manager = new \local_ai_manager\manager($purpose);
             $llmresponse = (object) $manager->perform_request($prompt, 'qtype_aitext', $this->contextid);
             if ($llmresponse->get_code() !== 200) {
                 throw new moodle_exception(
