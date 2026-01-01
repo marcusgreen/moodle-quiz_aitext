@@ -117,7 +117,8 @@ class quiz_aitext_report extends report_base {
             }
             $ctx = \context_module::instance($cm->id);
             $aibridge = new \quiz_aitext\aibridge($ctx->id);
-            $commentsummary = $aibridge->perform_request($prompt. ':and format with html tags:' .$comments);
+            $commentsummary = $aibridge->perform_request($prompt. get_string('formathtml', 'quiz_aitext') .$comments);
+            $commentsummary = $this->clean_ai_response($commentsummary);
             xdebug_break();
             return [
                 'analysis_message' => get_string('analysis_complete', 'quiz_aitext'),
@@ -130,6 +131,19 @@ class quiz_aitext_report extends report_base {
                 'error_details' => $e->getMessage(),
             ];
         }
+    }
+
+    /**
+     * Clean the AI response by removing markdown code fences.
+     *
+     * @param string $text The text to clean.
+     * @return string The cleaned text.
+     */
+    private function clean_ai_response($text) {
+        // Remove the opening and closing markdown code fences.
+        $text = preg_replace('/^```[a-zA-Z]*\n?/', '', $text);
+        $text = preg_replace('/\n?```$/', '', $text);
+        return trim($text);
     }
 
     /**
@@ -189,7 +203,7 @@ class quiz_aitext_report extends report_base {
                 'id' => $attempt->id,
                 'questiontext' => format_text($attempt->questiontext, FORMAT_HTML),
                 'qtype' => $attempt->qtype,
-                'state' => $attempt->state ?? 'unknown',
+                'state' => $attempt->state ?? get_string('unknownstate', 'quiz_aitext'),
                 'fraction' => $attempt->fraction ?? 0,
             ];
         }

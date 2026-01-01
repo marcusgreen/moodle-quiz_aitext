@@ -82,7 +82,7 @@
 
                   <div class="mb-3">
                       <label for="prompt" class="form-label">{{#str}} prompt, quiz_aitext {{/str}}</label>
-                      <textarea id="prompt" name="prompt" class="form-control" rows="3" placeholder="{{#str}} prompt_placeholder, quiz_aitext {{/str}}">Summarise this text indicating what students have learnt and what they have not learnt</textarea>
+                      <textarea id="prompt" name="prompt" class="form-control" rows="3" placeholder="{{#str}} prompt_placeholder, quiz_aitext {{/str}}">{{#str}} defaultprompt, quiz_aitext {{/str}}</textarea>
                   </div>
 
                   <button type="submit" class="btn btn-primary" name="submit" value="submit">
@@ -105,7 +105,7 @@
     <div class="card-body">
         {{#error_details}}
         <div class="alert alert-danger">
-            <strong>Error:</strong> {{error_details}}
+            <strong>{{#str}} error, core {{/str}}</strong> {{error_details}}
         </div>
         {{/error_details}}
 
@@ -122,12 +122,12 @@
             <table class="table table-striped table-bordered">
                 <thead class="table-dark">
                     <tr>
-                        <th>Student</th>
-                        <th>Question Type</th>
-                        <th>Question</th>
-                        <th>Response</th>
-                        <th>Score</th>
-                        <th>Percentage</th>
+                        <th>{{#str}} student, quiz_aitext {{/str}}</th>
+                        <th>{{#str}} questiontype, quiz_aitext {{/str}}</th>
+                        <th>{{#str}} question, quiz_aitext {{/str}}</th>
+                        <th>{{#str}} response, quiz_aitext {{/str}}</th>
+                        <th>{{#str}} score, quiz_aitext {{/str}}</th>
+                        <th>{{#str}} percentage, quiz_aitext {{/str}}</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -135,7 +135,7 @@
                     <tr>
                         <td>
                             <strong>{{username}}</strong><br>
-                            <small class="text-muted">User ID: {{userid}}</small>
+                            <small class="text-muted">{{#str}} userid, quiz_aitext {{/str}} {{userid}}</small>
                         </td>
                         <td>
                             <span class="badge bg-secondary">{{questiontype}}</span>
@@ -158,7 +158,7 @@
             </table>
         </div>
         <div class="alert alert-info">
-            Total student submissions found: {{total_submissions_count}}
+            {{#str}} totalsubmissions, quiz_aitext {{/str}} {{total_submissions_count}}
         </div>
         {{/student_submissions}}
 
